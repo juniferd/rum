@@ -217,7 +217,7 @@ body {
   clear: both;
 }
 #modal > .modal-inner > div > div{
-  width: 280px;
+  width: 260px;
   color: #50514f;
   position: relative;
 }
@@ -286,7 +286,7 @@ body {
   margin-bottom: 10px;
 }
 #add-users div > div > div{
-  width: 260px;
+  width: 245px;
   color: #50514f;
   position: relative;
 }
@@ -380,6 +380,7 @@ span.valid {
     -moz-border-radius: 5px;
     -ms-border-radius: 5px;
     -o-border-radius: 5px;
+  margin-bottom: 10px;
 }
 .message.warning {
   background: #ffe066;

@@ -6,7 +6,6 @@ import uuid from 'uuid';
 import User from './UserStorage';
 import AddUserPanel from './AddUser';
 import Message from './Message';
-
 var Modal = React.createClass({
   mixins: [User, Message],
   getInitialState: function() {
@@ -38,7 +37,6 @@ var Modal = React.createClass({
   },
   componentDidMount: function() {
     var self = this;
-
     MyEmitter.on('editUser', function(userId) {
       self.setState({modalBgClass: 'animated fadeIn'});
       self.setState({modalClass: 'animated fadeInRight'});
@@ -66,7 +64,7 @@ var Modal = React.createClass({
           returnObj = {'emailValid' : 'invalid icon-cancel-circled'};
         } else if (err == 'pwdError') {
           returnObj = {'pwdValid' : 'invalid icon-cancel-circled'};
-        } 
+        }
         self.setState({errorMsg: msg});
         self.setState(returnObj);
       }
@@ -91,7 +89,6 @@ var Modal = React.createClass({
     MyEmitter.removeListener('emailValidated');
     MyEmitter.removeListener('pwdValidated');
   },
-  
   handleFadeOut: function() {
     if (this.state.modalBgClass == 'animated fadeIn') {
       MyEmitter.emit('closeEditUser');
@@ -112,7 +109,6 @@ var Modal = React.createClass({
     e.preventDefault();
     var thisUuid = uuid.v1();
     this.setState({tokens: this.state.tokens.concat([thisUuid])});
-    
   },
   handleDeleteToken: function(e,token) {
     e.preventDefault();
@@ -140,21 +136,19 @@ var Modal = React.createClass({
       return (
         <div className="token" key={i}>
           {token}
-          <a onClick={() => self.handleDeleteToken(event,token)}>
+          <a onClick={(event) => self.handleDeleteToken(event,token)}>
             <span className={"icon-trash-empty"}/>
           </a>
         </div>
       );
-    });  
-    
+    });
     var showErrorMsg = this.state.errorMsg ? 'message warning visible' : 'invisible';
     var btnClass = 'disabled';
     if (this.state.emailValid == 'valid icon-ok-circled' && this.state.pwdValid == 'valid icon-ok-circled') {
       btnClass = '';
     }
-
     return (
-      <div 
+      <div
         id={"modal-bg"}
         className={this.state.modalBgClass}
         onAnimationEnd={this.handleInvisible}>
@@ -182,14 +176,13 @@ var Modal = React.createClass({
                   onChange={this.handleChangeUsername}
                   onBlur={this.checkUsername}
                   placeholder={"Email"}/>
-                <span className={this.state.emailValid}/>  
+                <span className={this.state.emailValid}/>
               </div>
             </div>
             <div>
               <div className={"float-left align-right"}>{"User's password:"}</div>
               <div className={"float-right align-left"}>
-                
-                <input 
+                <input
                   id={"modal-pwd"}
                   type={"password"}
                   value={this.state.pwd}
@@ -225,5 +218,4 @@ var Modal = React.createClass({
     );
   }
 });
-
 export default Modal

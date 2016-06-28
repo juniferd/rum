@@ -47,8 +47,16 @@ var User = {
   saveNewToLocalStorage: function(thisState){
 
     var lockrUsers = Lockr.get('users');
-    var lastUser = lockrUsers.pop()
-    var userId = 'user_' + (parseInt(lastUser.slice(5))+1)
+    if (lockrUsers.length > 0){
+      var lastUser = lockrUsers.pop();
+      var userId = 'user_' + (parseInt(lastUser.slice(5))+1);
+      
+      lockrUsers.push(lastUser);
+      console.log('updated user list',lockrUsers);
+    } else {
+      var userId = 'user_1';
+    }
+
     var objUser = {
       'userId' : userId,
       'userName' : thisState.userName,
@@ -57,7 +65,7 @@ var User = {
       'created' : moment().format('DD MMM YYYY hh:mm a'),
       'updated' : moment().format('DD MMM YYYY hh:mm a')
     }
-    lockrUsers.push(lastUser);
+
     lockrUsers.push(userId);
     
     Lockr.set('users',lockrUsers);

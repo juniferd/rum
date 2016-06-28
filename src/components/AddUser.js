@@ -1,11 +1,8 @@
 import React from 'react';
-import Lockr from 'lockr';
-import moment from 'moment';
 import MyEmitter from './GlobalEvents';
 import uuid from 'uuid';
 import User from './UserStorage';
 import Message from './Message';
-
 var AddUserPanel = React.createClass({
   mixins: [User, Message],
   getInitialState: function() {
@@ -23,16 +20,13 @@ var AddUserPanel = React.createClass({
   handleClickToken: function() {
     var thisUuid = uuid.v1();
     this.setState({tokens: this.state.tokens.concat([thisUuid])});
-    
   },
   handleClickUser: function() {
-
     if (this.state.emailValid == 'valid icon-ok-circled' && this.state.pwdValid == 'valid icon-ok-circled') {
       this.saveNewToLocalStorage(this.state);
     } else {
       MyEmitter.emit('errorMsg','fixErrors','addUser','Fix Errors First')
     }
-    
   },
   handleChangeUsername: function(e) {
     this.setState({userName: e.target.value})
@@ -45,13 +39,18 @@ var AddUserPanel = React.createClass({
       this.setState({expandedClass: 'collapsed'});
       this.setState({iconClass: 'icon-expand-right'});
       MyEmitter.emit('addUserPanelCollapse');
-      
     } else {
       this.setState({expandedClass: 'expanded'});
       this.setState({iconClass: 'icon-collapse-left'});
       MyEmitter.emit('addUserPanelExpand');
-
     }
+  },
+  handleDeleteToken: function(e,token) {
+    e.preventDefault();
+    var arrTokens = this.state.tokens;
+    var indexThisToken  = arrTokens.indexOf(token);
+    arrTokens.splice(indexThisToken,1);
+    this.setState({tokens: arrTokens});
   },
   checkUsername: function(){
     this.checkValidEmail(this.state.userName,'addUser');
@@ -72,7 +71,6 @@ var AddUserPanel = React.createClass({
         pwdValid: ''
       });
     });
-
     MyEmitter.on('errorMsg', function(err,loc,msg) {
       if (loc == 'addUser') {
         //display message, focus back on problem input
@@ -81,7 +79,7 @@ var AddUserPanel = React.createClass({
           returnObj = {'emailValid' : 'invalid icon-cancel-circled'};
         } else if (err == 'pwdError') {
           returnObj = {'pwdValid' : 'invalid icon-cancel-circled'};
-        } 
+        }
         self.setState({errorMsg: msg});
         self.setState(returnObj);
       }
@@ -98,17 +96,20 @@ var AddUserPanel = React.createClass({
     });
   },
   componentWillUnmount: function() {
-    var self = this;
     MyEmitter.removeListener('addedUser');
     MyEmitter.removeListener('errorMsg');
     MyEmitter.removeListener('emailValidated');
     MyEmitter.removeListener('pwdValidated');
   },
   render: function() {
+    var self = this;
     var tokens = this.state.tokens.map(function(token,i){
       return (
         <div className="token" key={i}>
           {token}
+          <a onClick={(event) => self.handleDeleteToken(event,token)}>
+            <span className={"icon-trash-empty"}/>
+          </a>
         </div>
       );
     });
@@ -118,10 +119,10 @@ var AddUserPanel = React.createClass({
       btnClass = '';
     }
     return (
-      <div 
+      <div
         id={"add-users"}
         className={this.state.expandedClass}>
-        <div 
+        <div
           className={"control"}
           onClick={this.handleExpandCollapse}>
           <span className={this.state.iconClass}/>
@@ -131,13 +132,12 @@ var AddUserPanel = React.createClass({
           <div className={showErrorMsg}>
             {this.state.errorMsg}
           </div>
-
           <div className={"clearfix"}>
             <div className={"float-left align-right"}>
               <label>Username (email):</label>
             </div>
             <div className={"float-right align-left"}>
-              <input 
+              <input
                 id={"username"}
                 value={this.state.userName}
                 placeholder={"type user's email"}
@@ -146,13 +146,12 @@ var AddUserPanel = React.createClass({
               <span className={this.state.emailValid}/>
             </div>
           </div>
-
           <div className={"clearfix"}>
             <div className={"float-left align-right"}>
               <label>User&apos;s password:</label>
             </div>
             <div className={"float-right align-left "}>
-              <input 
+              <input
                 type={"password"}
                 id={"password"}
                 value={this.state.pwd}
@@ -162,19 +161,17 @@ var AddUserPanel = React.createClass({
               <span className={this.state.pwdValid}/>
             </div>
           </div>
-
           <div className={"clearfix"}>
             <div className={"float-left align-right"}>Tokens:</div>
             <div className={"float-right align-left "}>
               {tokens}
-              <a 
+              <a
                 id={"add-token"}
                 onClick={this.handleClickToken}>
                 + add tokens (optional)
               </a>
             </div>
           </div>
-
           <div className={"clearfix"}>
               <button
                 id={"create-user"}
@@ -188,5 +185,4 @@ var AddUserPanel = React.createClass({
     );
   }
 });
-
 export default AddUserPanel
