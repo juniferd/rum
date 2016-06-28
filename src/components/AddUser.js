@@ -1,5 +1,5 @@
 import React from 'react';
-import MyEmitter from './GlobalEvents';
+import globalEventEmitter from './GlobalEvents';
 import uuid from 'uuid';
 import User from './UserStorage';
 import Message from './Message';
@@ -25,7 +25,7 @@ var AddUserPanel = React.createClass({
     if (this.state.emailValid == 'valid icon-ok-circled' && this.state.pwdValid == 'valid icon-ok-circled') {
       this.saveNewToLocalStorage(this.state);
     } else {
-      MyEmitter.emit('errorMsg','fixErrors','addUser','Fix Errors First')
+      globalEventEmitter.emit('errorMsg','fixErrors','addUser','Fix Errors First')
     }
   },
   handleChangeUsername: function(e) {
@@ -38,15 +38,17 @@ var AddUserPanel = React.createClass({
     if (this.state.expandedClass == 'expanded') {
       this.setState({expandedClass: 'collapsed'});
       this.setState({iconClass: 'icon-expand-right'});
-      MyEmitter.emit('addUserPanelCollapse');
+      globalEventEmitter.emit('addUserPanelCollapse');
     } else {
       this.setState({expandedClass: 'expanded'});
       this.setState({iconClass: 'icon-collapse-left'});
-      MyEmitter.emit('addUserPanelExpand');
+      globalEventEmitter.emit('addUserPanelExpand');
     }
   },
   handleDeleteToken: function(e,token) {
+    
     e.preventDefault();
+    
     var arrTokens = this.state.tokens;
     var indexThisToken  = arrTokens.indexOf(token);
     arrTokens.splice(indexThisToken,1);
@@ -61,7 +63,7 @@ var AddUserPanel = React.createClass({
   componentDidMount: function() {
     var self = this;
     //once new user is added clear the form
-    MyEmitter.on('addedUser', function() {
+    globalEventEmitter.on('addedUser', function() {
       self.setState({
         userName: '',
         pwd: '',
@@ -71,7 +73,7 @@ var AddUserPanel = React.createClass({
         pwdValid: ''
       });
     });
-    MyEmitter.on('errorMsg', function(err,loc,msg) {
+    globalEventEmitter.on('errorMsg', function(err,loc,msg) {
       if (loc == 'addUser') {
         //display message, focus back on problem input
         var returnObj = {};
@@ -84,30 +86,34 @@ var AddUserPanel = React.createClass({
         self.setState(returnObj);
       }
     });
-    MyEmitter.on('emailValidated', function(loc){
+    globalEventEmitter.on('emailValidated', function(loc){
       if (loc == 'addUser') {
         self.setState({emailValid : 'valid icon-ok-circled'});
       }
     });
-    MyEmitter.on('pwdValidated', function(loc){
+    globalEventEmitter.on('pwdValidated', function(loc){
       if (loc == 'addUser') {
         self.setState({pwdValid : 'valid icon-ok-circled'});
       }
     });
   },
   componentWillUnmount: function() {
-    MyEmitter.removeListener('addedUser');
-    MyEmitter.removeListener('errorMsg');
-    MyEmitter.removeListener('emailValidated');
-    MyEmitter.removeListener('pwdValidated');
+    globalEventEmitter.removeAllListeners('addedUser');
+    globalEventEmitter.removeAllListeners('errorMsg');
+    globalEventEmitter.removeAllListeners('emailValidated');
+    globalEventEmitter.removeAllListeners('pwdValidated');
   },
   render: function() {
     var self = this;
     var tokens = this.state.tokens.map(function(token,i){
       return (
-        <div className="token" key={i}>
+        <div className="token"
+          key={i}
+          ref={'token-'+token}>
           {token}
-          <a onClick={(event) => self.handleDeleteToken(event,token)}>
+          <a ref={'del-token-'+i}
+            key={'del-token-'+token}
+            onClick={(event) => self.handleDeleteToken(event,token)}>
             <span className={"icon-trash-empty"}/>
           </a>
         </div>
@@ -139,6 +145,7 @@ var AddUserPanel = React.createClass({
             <div className={"float-right align-left"}>
               <input
                 id={"username"}
+                ref={"add-username"}
                 value={this.state.userName}
                 placeholder={"type user's email"}
                 onChange={this.handleChangeUsername}
@@ -154,6 +161,7 @@ var AddUserPanel = React.createClass({
               <input
                 type={"password"}
                 id={"password"}
+                ref={"add-password"}
                 value={this.state.pwd}
                 placeholder={"at least 8 characters, 1 number"}
                 onChange={this.handleChangePwd}
@@ -167,6 +175,7 @@ var AddUserPanel = React.createClass({
               {tokens}
               <a
                 id={"add-token"}
+                ref={"add-token"}
                 onClick={this.handleClickToken}>
                 + add tokens (optional)
               </a>
@@ -175,6 +184,7 @@ var AddUserPanel = React.createClass({
           <div className={"clearfix"}>
               <button
                 id={"create-user"}
+                ref={"btn-create-user"}
                 className={btnClass}
                 onClick={this.handleClickUser}>
                 Create User

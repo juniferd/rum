@@ -24,6 +24,9 @@ describe('UserListComponent', () => {
   it('should have default states', () => {
     var list = findAllWithClass(UserListComponent,'users');
     expect(list.length).to.equal(1);
+
+    var visibleTools = findAllWithClass(UserListComponent,'visible-tools');
+    expect(visibleTools.length).to.equal(0);    
   });
 
   it('should render default view if nothing is stored in local storage', () => {
@@ -102,7 +105,7 @@ describe('UserListComponent', () => {
     var delUser = findWithRef(UserListComponent,'empty-user_1');
     var userId = delUser.ref.substr(6);
     //manually invoke onClick
-    delUser.props.onClick(userId);
+    delUser.props.onClick({stopPropagation: () => {}},userId);
 
     //manually redraw
     UserListComponent = renderer.getRenderOutput();
@@ -119,34 +122,19 @@ describe('UserListComponent', () => {
   });
 
   it('should render empty list with error message', () => {
-    const renderer = ReactTestUtils.createRenderer();
-    renderer.render(<UserList />);
+    // this time we won't use shallow rendering to test state and UI
+    Lockr.flush();
+    var UserListComponent = ReactTestUtils.renderIntoDocument(<UserList/>);
+    UserListComponent.loadFromLockr();
 
-    UserListComponent = renderer.getRenderOutput();
+    var delUsers = ReactTestUtils.scryRenderedDOMComponentsWithClass(UserListComponent,'delete');
+    ReactTestUtils.Simulate.click(delUsers[1]);
+    ReactTestUtils.Simulate.click(delUsers[0]);
 
-    var delUser1 = findWithRef(UserListComponent,'empty-user_1');
-    var delUser2 = findWithRef(UserListComponent,'empty-user_2');
-    var userId1 = delUser1.ref.substr(6);
-    var userId2 = delUser2.ref.substr(6);
-    var didError = false;
-    
-    MyEmitter.on('errorMsg',function(err,loc,msg){
-      if (loc=='main') {
-        didError = true;
-      }
-    });
+    expect(UserListComponent.state.data.length).to.equal(0);
+    expect(UserListComponent.state.errorMsg).to.equal('You have no users! Try adding some');
 
-    //manually invoke onClick
-    delUser1.props.onClick(userId1);
-    delUser2.props.onClick(userId2);
-
-    //manually redraw
-    UserListComponent = renderer.getRenderOutput();
-
-    expect(didError).to.equal(true);
-    var lis = findAllWithType(UserListComponent,'li');
-
-    expect(lis.length).to.equal(1);
+    UserListComponent.componentWillUnmount();
     
   });
   
@@ -168,7 +156,7 @@ describe('UserListComponent', () => {
     });
 
     //manually invoke onClick
-    editUser1.props.onClick(userId1);
+    editUser1.props.onClick({stopPropagation: () => {}},userId1);
 
     //manually redraw
     UserListComponent = renderer.getRenderOutput();
@@ -200,7 +188,7 @@ describe('UserListComponent', () => {
     });
 
     //manually invoke onClick
-    userRow.props.onClick(userId);
+    userRow.props.onClick({stopPropagation: () => {}},userId);
 
     //manually redraw
     UserListComponent = renderer.getRenderOutput();
@@ -243,4 +231,6 @@ describe('UserListComponent', () => {
     listItems = findAllWithClass(UserListComponent,'visible-tools');
     expect(listItems.length).to.equal(0);
   });
+  
+
 });

@@ -2,11 +2,10 @@ import React from 'react';
 import Lockr from 'lockr';
 import User from './UserStorage';
 import Message from './Message';
-import MyEmitter from './GlobalEvents';
+import globalEventEmitter from './GlobalEvents';
 var UserList = React.createClass({
   mixins: [User, Message],
   getInitialState: function() {
-    console.log('getInitialState');
     return {
       visibleTools: '',
       expandedUserTableClass: 'users'
@@ -24,7 +23,7 @@ var UserList = React.createClass({
     } else {
       // if there are no users
       this.setState({data : []});
-      MyEmitter.emit('errorMsg','noUsers','main','You have no users! Try adding some');
+      globalEventEmitter.emit('errorMsg','noUsers','main','You have no users! Try adding some');
     }
   },
   componentWillMount: function() {
@@ -32,31 +31,31 @@ var UserList = React.createClass({
   },
   componentDidMount: function() {
     var self = this;
-    MyEmitter.on('addedUser', function() {
+    globalEventEmitter.on('addedUser', function() {
       self.loadFromLockr();
       self.setState({errorMsg: ''});
     });
-    MyEmitter.on('updatedUser', function() {
+    globalEventEmitter.on('updatedUser', function() {
       self.loadFromLockr();
     });
-    MyEmitter.on('addUserPanelCollapse', function() {
+    globalEventEmitter.on('addUserPanelCollapse', function() {
       self.setState({expandedUserTableClass: 'users expanded'});
     });
-    MyEmitter.on('addUserPanelExpand', function() {
+    globalEventEmitter.on('addUserPanelExpand', function() {
       self.setState({expandedUserTableClass: 'users collapsed'});
     });
-    MyEmitter.on('errorMsg', function(err,loc,msg){
+    globalEventEmitter.on('errorMsg', function(err,loc,msg){
       if (loc=='main') {
         self.setState({errorMsg: msg});
       }
     });
   },
   componentWillUnmount: function() {
-    MyEmitter.removeListener('addedUser');
-    MyEmitter.removeListener('updatedUser');
-    MyEmitter.removeListener('addUserPanelCollapse');
-    MyEmitter.removeListener('addUserPanelExpand');
-    MyEmitter.removeListener('errorMsg');
+    globalEventEmitter.removeAllListeners('addedUser');
+    globalEventEmitter.removeAllListeners('updatedUser');
+    globalEventEmitter.removeAllListeners('addUserPanelCollapse');
+    globalEventEmitter.removeAllListeners('addUserPanelExpand');
+    globalEventEmitter.removeAllListeners('errorMsg');
   },
   handleMouseEnter: function(key) {
     this.setState({visibleTools: key});
@@ -64,10 +63,10 @@ var UserList = React.createClass({
   handleMouseLeave: function() {
     this.setState({visibleTools: ''});
   },
-  handleClickTrash: function(userId,e) {
-    if (e && e.stopPropagation) {
-      e.stopPropagation();
-    }
+  handleClickTrash: function(e,userId) {
+    
+    e.stopPropagation();
+    
     // remove this item from localStorage
     Lockr.rm(userId);
     // remove this userId from user list in localStorage
@@ -77,18 +76,19 @@ var UserList = React.createClass({
     Lockr.set('users',arrUsers);
     this.loadFromLockr();
   },
-  handleClickEdit: function(userId,e) {
-    if (e && e.stopPropagation) {
-      e.stopPropagation();
-    }
-    MyEmitter.emit('editUser',userId);
+  handleClickEdit: function(e,userId) {
+    
+    e.stopPropagation();
+    
+    globalEventEmitter.emit('editUser',userId);
   },
   render: function(){
     var self = this;
     var totUsers = Lockr.get('users').length;
     var showErrorMsg = this.state.errorMsg ? 'message warning visible' : 'invisible';
+    var userNodes;
     if (this.state.data) {
-      var userNodes = this.state.data.map(function(user){
+      userNodes = this.state.data.map(function(user){
         var thisClass = user.userId == self.state.visibleTools ? 'visible-tools' : '';
         return (
           <li
@@ -96,7 +96,7 @@ var UserList = React.createClass({
             key={user.userId}
             onMouseEnter={() => self.handleMouseEnter(user.userId)}
             onMouseLeave={() => self.handleMouseLeave()}
-            onClick={(event) => self.handleClickEdit(user.userId,event)}
+            onClick={(event) => self.handleClickEdit(event,user.userId)}
             className={thisClass}>
             <div className={"user item"}>{user.userName}</div>
             <div className={"tokens item"}>{user.tokens.length}</div>
@@ -104,19 +104,17 @@ var UserList = React.createClass({
             <div className={"date item"}>{user.updated}</div>
             <div className={"edit-tools"}>
               <div
-                onClick={(event) => self.handleClickTrash(user.userId,event)}
+                onClick={(event) => self.handleClickTrash(event,user.userId)}
                 className={"delete icon-trash-empty"}
                 ref={'empty-'+user.userId}/>
               <div
-                onClick={(event) => self.handleClickEdit(user.userId,event)}
+                onClick={(event) => self.handleClickEdit(event,user.userId)}
                 className={"edit icon-edit"}
                 ref={'edit-'+user.userId}/>
             </div>
           </li>
         )
       });
-    } else {
-      var userNodes = function(){return;}
     }
     return (
       <div

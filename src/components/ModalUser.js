@@ -1,10 +1,8 @@
 import React from 'react';
 import Lockr from 'lockr';
-import moment from 'moment';
-import MyEmitter from './GlobalEvents';
+import globalEventEmitter from './GlobalEvents';
 import uuid from 'uuid';
 import User from './UserStorage';
-import AddUserPanel from './AddUser';
 import Message from './Message';
 var Modal = React.createClass({
   mixins: [User, Message],
@@ -37,12 +35,12 @@ var Modal = React.createClass({
   },
   componentDidMount: function() {
     var self = this;
-    MyEmitter.on('editUser', function(userId) {
+    globalEventEmitter.on('editUser', function(userId) {
       self.setState({modalBgClass: 'animated fadeIn'});
       self.setState({modalClass: 'animated fadeInRight'});
       self.getUser(userId);
     });
-    MyEmitter.on('closeEditUser',function(){
+    globalEventEmitter.on('closeEditUser',function(){
       self.setState({modalBgClass: 'animated fadeOut'});
       self.setState({modalClass: 'animated fadeOutRight'});
       self.setState({
@@ -51,13 +49,13 @@ var Modal = React.createClass({
         pwdValid: 'valid icon-ok-circled'
       });
     });
-    MyEmitter.on('finishFadeOut',function(){
+    globalEventEmitter.on('finishFadeOut',function(){
       self.setState({modalBgClass: 'invisible'});
     });
-    MyEmitter.on('updatedUser', function(){
-      MyEmitter.emit('closeEditUser');
+    globalEventEmitter.on('updatedUser', function(){
+      globalEventEmitter.emit('closeEditUser');
     });
-    MyEmitter.on('errorMsg', function(err,loc,msg){
+    globalEventEmitter.on('errorMsg', function(err,loc,msg){
       if (loc=='editUser') {
         var returnObj = {};
         if (err == 'emailError') {
@@ -69,34 +67,34 @@ var Modal = React.createClass({
         self.setState(returnObj);
       }
     });
-    MyEmitter.on('emailValidated', function(loc){
+    globalEventEmitter.on('emailValidated', function(loc){
       if (loc == 'editUser') {
         self.setState({emailValid : 'valid icon-ok-circled'});
       }
     });
-    MyEmitter.on('pwdValidated', function(loc){
+    globalEventEmitter.on('pwdValidated', function(loc){
       if (loc == 'editUser') {
         self.setState({pwdValid : 'valid icon-ok-circled'});
       }
     });
   },
   componentWillUnmount: function() {
-    MyEmitter.removeListener('editUser');
-    MyEmitter.removeListener('closeEditUser');
-    MyEmitter.removeListener('finishFadeOut');
-    MyEmitter.removeListener('updatedUser');
-    MyEmitter.removeListener('errorMsg');
-    MyEmitter.removeListener('emailValidated');
-    MyEmitter.removeListener('pwdValidated');
+    globalEventEmitter.removeAllListeners('editUser');
+    globalEventEmitter.removeAllListeners('closeEditUser');
+    globalEventEmitter.removeAllListeners('finishFadeOut');
+    globalEventEmitter.removeAllListeners('updatedUser');
+    globalEventEmitter.removeAllListeners('errorMsg');
+    globalEventEmitter.removeAllListeners('emailValidated');
+    globalEventEmitter.removeAllListeners('pwdValidated');
   },
   handleFadeOut: function() {
     if (this.state.modalBgClass == 'animated fadeIn') {
-      MyEmitter.emit('closeEditUser');
+      globalEventEmitter.emit('closeEditUser');
     }
   },
   handleInvisible: function() {
     if (this.state.modalBgClass == 'animated fadeOut') {
-      MyEmitter.emit('finishFadeOut');
+      globalEventEmitter.emit('finishFadeOut');
     }
   },
   handleChangeUsername: function(e){
@@ -121,7 +119,7 @@ var Modal = React.createClass({
     if (this.state.emailValid == 'valid icon-ok-circled' && this.state.pwdValid == 'valid icon-ok-circled') {
       this.updateInLocalStorage(this.state);
     } else {
-      MyEmitter.emit('errorMsg','fixErrors','editUser','Fix Errors First');
+      globalEventEmitter.emit('errorMsg','fixErrors','editUser','Fix Errors First');
     }
   },
   checkUsername: function(){
@@ -136,7 +134,7 @@ var Modal = React.createClass({
       return (
         <div className="token" key={i}>
           {token}
-          <a onClick={(event) => self.handleDeleteToken(event,token)}>
+          <a className={"del-token"} onClick={(event) => self.handleDeleteToken(event,token)}>
             <span className={"icon-trash-empty"}/>
           </a>
         </div>
@@ -196,7 +194,7 @@ var Modal = React.createClass({
               <div className={"float-left align-right"}>Tokens:</div>
               <div className={"float-right align-left"}>
                 {tokens}
-                <p><a onClick={this.handleAddToken}>+ add token</a></p>
+                <p><a className={"add-token"} onClick={this.handleAddToken}>+ add token</a></p>
               </div>
             </div>
             <div>

@@ -1,17 +1,12 @@
 //save, update, delete users
-import MyEmitter from './GlobalEvents';
+import globalEventEmitter from './GlobalEvents';
 import Lockr from 'lockr';
 import moment from 'moment';
 import data from '../sources/data';
-
 var User = {
   loadFromLocalStorage: function() {
-
     var lockrUsers = Lockr.get('users');
-
     if (lockrUsers) {
-      console.log('loadFromLockr',Lockr.get('users'));
-
       var arrUsers = lockrUsers;
       // retrieve users
     } else {
@@ -24,7 +19,6 @@ var User = {
         var tokens = data[i]['tokens'];
         var created = moment().format('DD MMM YYYY hh:mm a');
         var updated = moment().format('DD MMM YYYY hh:mm a');
-
         var objUser = {
           'userId' : userId,
           'userName' : userName,
@@ -33,30 +27,22 @@ var User = {
           'created' : created,
           'updated' : updated
         }
-
         Lockr.set(userId,objUser);
         arrUsers.push(userId);
       }
-
       Lockr.set('users',arrUsers);
     }
-
     return arrUsers;
-
   },
   saveNewToLocalStorage: function(thisState){
-
     var lockrUsers = Lockr.get('users');
     if (lockrUsers.length > 0){
       var lastUser = lockrUsers.pop();
       var userId = 'user_' + (parseInt(lastUser.slice(5))+1);
-      
       lockrUsers.push(lastUser);
-      console.log('updated user list',lockrUsers);
     } else {
       var userId = 'user_1';
     }
-
     var objUser = {
       'userId' : userId,
       'userName' : thisState.userName,
@@ -65,18 +51,13 @@ var User = {
       'created' : moment().format('DD MMM YYYY hh:mm a'),
       'updated' : moment().format('DD MMM YYYY hh:mm a')
     }
-
     lockrUsers.push(userId);
-    
     Lockr.set('users',lockrUsers);
     Lockr.set(userId,objUser);
-
     // trigger some event that updates table
-    MyEmitter.emit('addedUser');
-    
+    globalEventEmitter.emit('addedUser');
   },
   updateInLocalStorage: function(thisState){
-
     var objUser = {
       'userId' : thisState.userId,
       'userName' : thisState.userName,
@@ -86,10 +67,8 @@ var User = {
       'updated' : moment().format('DD MMM YYYY hh:mm a')
     }
     Lockr.set(thisState.userId,objUser);
-
     //trigger some event that updates table
-    MyEmitter.emit('updatedUser');
+    globalEventEmitter.emit('updatedUser');
   }
 }
-
 export default User

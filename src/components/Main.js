@@ -3,12 +3,8 @@ require('styles/App.css');
 require('styles/fontello-embedded.css');
 require('styles/animate.css');
 import React from 'react';
-import Lockr from 'lockr';
 import AddUserPanel from './AddUser';
 import Modal from './ModalUser';
-import User from './UserStorage';
-import Message from './Message';
-import MyEmitter from './GlobalEvents';
 import UserList from './UserList';
 class App extends React.Component {
   render() {
@@ -22,6 +18,6 @@ class App extends React.Component {
   }
 }
 App.defaultProps = {
-  mainClass: "index"
+  mainClass: 'index'
 };
 export default App;
