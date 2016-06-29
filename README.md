@@ -59,13 +59,13 @@ npm test
 
 ```
 ## Screenshots
-![default data](https://github.com/juniferd/rum/tree/gh-pages/images/screen1.png)
+![default data](https://raw.githubusercontent.com/juniferd/rum/gh-pages/images/screen1.png)
 When you first load the app you get default dummy data
 
-![adding a user with validation](https://github.com/juniferd/rum/tree/gh-pages/images/adduser1.png)
+![adding a user with validation](https://raw.githubusercontent.com/juniferd/rum/gh-pages/images/adduser1.png)
 Inline validation of email/password fields
 
-![edit a user](https://github.com/juniferd/rum/tree/gh-pages/images/edituser1.png)
+![edit a user](https://raw.githubusercontent.com/juniferd/rum/gh-pages/images/edituser1.png)
 Edit existing users
 
 ## Some further considerations
