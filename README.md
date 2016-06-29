@@ -58,6 +58,15 @@ npm test
 │   │   │   ├── ... //js unit tests in here
 
 ```
+## Screenshots
+![default data](https://github.com/juniferd/rum/tree/gh-pages/images/screen1.png)
+When you first load the app you get default dummy data
+
+![adding a user with validation](https://github.com/juniferd/rum/tree/gh-pages/images/adduser1.png)
+Inline validation of email/password fields
+
+![edit a user](https://github.com/juniferd/rum/tree/gh-pages/images/edituser1.png)
+Edit existing users
 
 ## Some further considerations
 * Would need to do another pass and refactor to make more DRY
