@@ -1,6 +1,6 @@
 # User Management System
 
-This is a user management system that allows a user to add, edit, delete other end-users. End-users have a unique id, a username (their email), a password, optional unique tokens, a created timestamp, and an updated timestamp.
+This is a user management system built in React that allows a user to add, edit, delete other end-users. End-users have a unique id, a username (their email), a password, optional unique tokens, a created timestamp, and an updated timestamp.
 
 ## See the app in action
 
