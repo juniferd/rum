@@ -5,7 +5,7 @@ This is a user management system that allows a user to add, edit, delete other e
 ## See the app in action
 
 ### Run webpack dev server
-from inside the usermgmt directory:
+from inside the rum directory:
 ```
 npm install
 
@@ -16,7 +16,7 @@ Your browser should automatically open, but if not go to <http://localhost:8000>
 This can be sluggish so you could also compile the app into static files (see below).
 
 ### Or compile app into static files and run compiled app
-from inside usermgmt directory:
+from inside rum directory:
 ```
 npm run-script dist
 
@@ -35,7 +35,7 @@ npm test
 ## Where to find the components and test cases
 
 ```
-├── usermgmt/
+├── rum/
 │   ├── README.md
 │   ├── dist //compiled app goes here
 │   │   ├── ...
@@ -60,7 +60,7 @@ npm test
 ```
 
 ## Some further considerations
-* Would need to do another pass and refactor 
+* Would need to do another pass and refactor to make more DRY
 * Along with pagination, search and sort by columns would improve usability for very long lists
 * This app doesn't handle very large lists well. Next time, have some error handling if localStorage is full
 * This app saves the user password in plaintext, which would never be the right thing to do in the real world. Next time, hash password, store hash and only have ability to change to a new password in _edit user_ mode
