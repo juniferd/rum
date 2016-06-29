@@ -61,6 +61,7 @@ npm test
 
 ## Some further considerations
 * Would need to do another pass and refactor to make more DRY
+** In particular break down the form fields into reusable React components rather than duplicating them
 * Along with pagination, search and sort by columns would improve usability for very long lists
 * This app doesn't handle very large lists well. Next time, have some error handling if localStorage is full
 * This app saves the user password in plaintext, which would never be the right thing to do in the real world. Next time, hash password, store hash and only have ability to change to a new password in _edit user_ mode

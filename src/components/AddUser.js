@@ -1,10 +1,10 @@
 import React from 'react';
 import globalEventEmitter from './GlobalEvents';
 import uuid from 'uuid';
-import User from './UserStorage';
-import Message from './Message';
+import UserMixin from './UserStorage';
+import ValidationMixin from './ValidationHandling';
 var AddUserPanel = React.createClass({
-  mixins: [User, Message],
+  mixins: [UserMixin, ValidationMixin],
   getInitialState: function() {
     return {
       expandedClass: 'expanded',
@@ -22,7 +22,7 @@ var AddUserPanel = React.createClass({
     this.setState({tokens: this.state.tokens.concat([thisUuid])});
   },
   handleClickUser: function() {
-    if (this.state.emailValid == 'valid icon-ok-circled' && this.state.pwdValid == 'valid icon-ok-circled') {
+    if (this.state.emailValid == 'valid' && this.state.pwdValid == 'valid') {
       this.saveNewToLocalStorage(this.state);
     } else {
       globalEventEmitter.emit('errorMsg','fixErrors','addUser','Fix Errors First')
@@ -78,9 +78,9 @@ var AddUserPanel = React.createClass({
         //display message, focus back on problem input
         var returnObj = {};
         if (err == 'emailError') {
-          returnObj = {'emailValid' : 'invalid icon-cancel-circled'};
+          returnObj = {'emailValid' : 'invalid'};
         } else if (err == 'pwdError') {
-          returnObj = {'pwdValid' : 'invalid icon-cancel-circled'};
+          returnObj = {'pwdValid' : 'invalid'};
         }
         self.setState({errorMsg: msg});
         self.setState(returnObj);
@@ -88,12 +88,12 @@ var AddUserPanel = React.createClass({
     });
     globalEventEmitter.on('emailValidated', function(loc){
       if (loc == 'addUser') {
-        self.setState({emailValid : 'valid icon-ok-circled'});
+        self.setState({emailValid : 'valid'});
       }
     });
     globalEventEmitter.on('pwdValidated', function(loc){
       if (loc == 'addUser') {
-        self.setState({pwdValid : 'valid icon-ok-circled'});
+        self.setState({pwdValid : 'valid'});
       }
     });
   },
@@ -105,6 +105,10 @@ var AddUserPanel = React.createClass({
   },
   render: function() {
     var self = this;
+    var iconEmailValid = this.state.emailValid == 'valid' ? 'valid icon-ok-circled' : 'invalid icon-cancel-circled';
+    iconEmailValid = this.state.emailValid == '' ? '' : iconEmailValid;
+    var iconPwdValid = this.state.pwdValid == 'valid' ? 'valid icon-ok-circled' : 'invalid icon-cancel-circled';
+    iconPwdValid = this.state.pwdValid == '' ? '' : iconPwdValid;
     var tokens = this.state.tokens.map(function(token,i){
       return (
         <div className="token"
@@ -121,7 +125,7 @@ var AddUserPanel = React.createClass({
     });
     var showErrorMsg = this.state.errorMsg ? 'message warning visible' : 'invisible';
     var btnClass = 'disabled';
-    if (this.state.emailValid == 'valid icon-ok-circled' && this.state.pwdValid == 'valid icon-ok-circled') {
+    if (this.state.emailValid == 'valid' && this.state.pwdValid == 'valid') {
       btnClass = '';
     }
     return (
@@ -150,7 +154,7 @@ var AddUserPanel = React.createClass({
                 placeholder={"type user's email"}
                 onChange={this.handleChangeUsername}
                 onBlur={this.checkUsername}/>
-              <span className={this.state.emailValid}/>
+              <span className={iconEmailValid}/>
             </div>
           </div>
           <div className={"clearfix"}>
@@ -166,7 +170,7 @@ var AddUserPanel = React.createClass({
                 placeholder={"at least 8 characters, 1 number"}
                 onChange={this.handleChangePwd}
                 onBlur={this.checkPassword}/>
-              <span className={this.state.pwdValid}/>
+              <span className={iconPwdValid}/>
             </div>
           </div>
           <div className={"clearfix"}>

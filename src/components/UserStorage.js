@@ -2,8 +2,8 @@
 import globalEventEmitter from './GlobalEvents';
 import Lockr from 'lockr';
 import moment from 'moment';
-import data from '../sources/data';
-var User = {
+import defaultData from '../sources/DefaultData';
+var UserMixin = {
   loadFromLocalStorage: function() {
     var lockrUsers = Lockr.get('users');
     if (lockrUsers) {
@@ -12,11 +12,11 @@ var User = {
     } else {
       // did not find users in local storage so set it up now
       var arrUsers = [];
-      for (var i = 0; i < data.length; i++) {
-        var userId = data[i]['key'];
-        var userName = data[i]['userName'];
-        var pwd = data[i]['pwd'];
-        var tokens = data[i]['tokens'];
+      for (var i = 0; i < defaultData.length; i++) {
+        var userId = defaultData[i]['key'];
+        var userName = defaultData[i]['userName'];
+        var pwd = defaultData[i]['pwd'];
+        var tokens = defaultData[i]['tokens'];
         var created = moment().format('DD MMM YYYY hh:mm a');
         var updated = moment().format('DD MMM YYYY hh:mm a');
         var objUser = {
@@ -71,4 +71,4 @@ var User = {
     globalEventEmitter.emit('updatedUser');
   }
 }
-export default User
+export default UserMixin

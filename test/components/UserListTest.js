@@ -10,7 +10,7 @@ var ReactTestUtils = require('react-addons-test-utils');
 import createComponent from 'helpers/shallowRenderHelper';
 import Lockr from 'lockr';
 import MyEmitter from 'components/GlobalEvents';
-import Message from 'components/Message';
+import ValidationMixin from 'components/ValidationHandling';
 import UserList from 'components/UserList';
 import {findAllWithType, findAllWithClass, findWithType, findWithRef} from 'react-shallow-testutils';
 

@@ -45,8 +45,8 @@ describe('EditModalComponent', () => {
     ReactTestUtils.Simulate.change(password);
     ReactTestUtils.Simulate.blur(password);
     
-    expect(EditModalComponent.state.emailValid).to.equal('valid icon-ok-circled');
-    expect(EditModalComponent.state.pwdValid).to.equal('valid icon-ok-circled');
+    expect(EditModalComponent.state.emailValid).to.equal('valid');
+    expect(EditModalComponent.state.pwdValid).to.equal('valid');
 
     var btnSubmit = ReactTestUtils.scryRenderedDOMComponentsWithTag(EditModalComponent,'button');
     btnSubmit = btnSubmit[0];
@@ -75,8 +75,8 @@ describe('EditModalComponent', () => {
     ReactTestUtils.Simulate.change(email);
     ReactTestUtils.Simulate.blur(email);
 
-    expect(EditModalComponent.state.emailValid).to.equal('invalid icon-cancel-circled');
-    expect(EditModalComponent.state.pwdValid).to.equal('valid icon-ok-circled');
+    expect(EditModalComponent.state.emailValid).to.equal('invalid');
+    expect(EditModalComponent.state.pwdValid).to.equal('valid');
 
     var btnSubmit = ReactTestUtils.scryRenderedDOMComponentsWithTag(EditModalComponent,'button');
     btnSubmit = btnSubmit[0];
@@ -97,8 +97,8 @@ describe('EditModalComponent', () => {
     ReactTestUtils.Simulate.change(password);
     ReactTestUtils.Simulate.blur(password);
 
-    expect(EditModalComponent.state.emailValid).to.equal('valid icon-ok-circled');
-    expect(EditModalComponent.state.pwdValid).to.equal('invalid icon-cancel-circled');
+    expect(EditModalComponent.state.emailValid).to.equal('valid');
+    expect(EditModalComponent.state.pwdValid).to.equal('invalid');
 
     var btnSubmit = ReactTestUtils.scryRenderedDOMComponentsWithTag(EditModalComponent,'button');
     btnSubmit = btnSubmit[0];

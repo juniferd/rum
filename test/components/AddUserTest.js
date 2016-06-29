@@ -174,12 +174,12 @@ describe('AddUserComponent', () => {
     var password = inputs[1];
 
     ReactTestUtils.Simulate.blur(email);
-    expect(AddUserComponent.state.emailValid).to.equal('invalid icon-cancel-circled');
+    expect(AddUserComponent.state.emailValid).to.equal('invalid');
     expect(AddUserComponent.state.pwdValid).to.equal('');
 
     ReactTestUtils.Simulate.blur(password);
-    expect(AddUserComponent.state.emailValid).to.equal('invalid icon-cancel-circled');
-    expect(AddUserComponent.state.pwdValid).to.equal('invalid icon-cancel-circled');
+    expect(AddUserComponent.state.emailValid).to.equal('invalid');
+    expect(AddUserComponent.state.pwdValid).to.equal('invalid');
 
     var btnSubmit = ReactTestUtils.scryRenderedDOMComponentsWithTag(AddUserComponent,'button');
     btnSubmit = btnSubmit[0];
@@ -219,8 +219,8 @@ describe('AddUserComponent', () => {
     expect(AddUserComponent.state.pwd).to.equal(testPass);
     expect(AddUserComponent.state.tokens.length).to.equal(3);
     expect(AddUserComponent.state.errorMsg).to.equal('');
-    expect(AddUserComponent.state.emailValid).to.equal('valid icon-ok-circled');
-    expect(AddUserComponent.state.pwdValid).to.equal('valid icon-ok-circled');
+    expect(AddUserComponent.state.emailValid).to.equal('valid');
+    expect(AddUserComponent.state.pwdValid).to.equal('valid');
 
     var btnSubmit = ReactTestUtils.scryRenderedDOMComponentsWithTag(AddUserComponent,'button');
     btnSubmit = btnSubmit[0];
@@ -278,11 +278,11 @@ describe('AddUserComponent', () => {
     ReactTestUtils.Simulate.click(control);
 
     expect(AddUserComponent.state.expandedClass).to.equal('collapsed');
-    expect(UserListComponent.state.expandedUserTableClass).to.equal('users expanded');
+    expect(UserListComponent.state.expandedUserTableClass).to.equal('expanded');
     ReactTestUtils.Simulate.click(control);
 
     expect(AddUserComponent.state.expandedClass).to.equal('expanded');
-    expect(UserListComponent.state.expandedUserTableClass).to.equal('users collapsed');
+    expect(UserListComponent.state.expandedUserTableClass).to.equal('collapsed');
 
     AddUserComponent.componentWillUnmount();
   });

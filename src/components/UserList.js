@@ -1,14 +1,14 @@
 import React from 'react';
 import Lockr from 'lockr';
-import User from './UserStorage';
-import Message from './Message';
+import UserMixin from './UserStorage';
+import ValidationMixin from './ValidationHandling';
 import globalEventEmitter from './GlobalEvents';
 var UserList = React.createClass({
-  mixins: [User, Message],
+  mixins: [UserMixin, ValidationMixin],
   getInitialState: function() {
     return {
       visibleTools: '',
-      expandedUserTableClass: 'users'
+      expandedUserTableClass: 'collapsed'
     };
   },
   loadFromLockr: function() {
@@ -39,10 +39,10 @@ var UserList = React.createClass({
       self.loadFromLockr();
     });
     globalEventEmitter.on('addUserPanelCollapse', function() {
-      self.setState({expandedUserTableClass: 'users expanded'});
+      self.setState({expandedUserTableClass: 'expanded'});
     });
     globalEventEmitter.on('addUserPanelExpand', function() {
-      self.setState({expandedUserTableClass: 'users collapsed'});
+      self.setState({expandedUserTableClass: 'collapsed'});
     });
     globalEventEmitter.on('errorMsg', function(err,loc,msg){
       if (loc=='main') {
@@ -87,6 +87,7 @@ var UserList = React.createClass({
     var totUsers = Lockr.get('users').length;
     var showErrorMsg = this.state.errorMsg ? 'message warning visible' : 'invisible';
     var userNodes;
+    var tableClass = this.state.expandedUserTableClass == 'expanded' ? 'users expanded' : 'users collapsed';
     if (this.state.data) {
       userNodes = this.state.data.map(function(user){
         var thisClass = user.userId == self.state.visibleTools ? 'visible-tools' : '';
@@ -118,7 +119,7 @@ var UserList = React.createClass({
     }
     return (
       <div
-        className={this.state.expandedUserTableClass}>
+        className={tableClass}>
         <h1>All Users: {totUsers}</h1>
         <div className={showErrorMsg}>
           {this.state.errorMsg}

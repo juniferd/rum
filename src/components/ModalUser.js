@@ -2,18 +2,18 @@ import React from 'react';
 import Lockr from 'lockr';
 import globalEventEmitter from './GlobalEvents';
 import uuid from 'uuid';
-import User from './UserStorage';
-import Message from './Message';
+import UserMixin from './UserStorage';
+import ValidationMixin from './ValidationHandling';
 var Modal = React.createClass({
-  mixins: [User, Message],
+  mixins: [UserMixin, ValidationMixin],
   getInitialState: function() {
     // this should be empty to start
     return {
       modalBgClass: 'invisible',
       modalClass: '',
       errorMsg: '',
-      emailValid: 'valid icon-ok-circled',
-      pwdValid: 'valid icon-ok-circled',
+      emailValid: 'valid',
+      pwdValid: 'valid',
       userId: '',
       userName: '',
       pwd: '',
@@ -45,8 +45,8 @@ var Modal = React.createClass({
       self.setState({modalClass: 'animated fadeOutRight'});
       self.setState({
         errorMsg: '',
-        emailValid: 'valid icon-ok-circled',
-        pwdValid: 'valid icon-ok-circled'
+        emailValid: 'valid',
+        pwdValid: 'valid'
       });
     });
     globalEventEmitter.on('finishFadeOut',function(){
@@ -59,9 +59,9 @@ var Modal = React.createClass({
       if (loc=='editUser') {
         var returnObj = {};
         if (err == 'emailError') {
-          returnObj = {'emailValid' : 'invalid icon-cancel-circled'};
+          returnObj = {'emailValid' : 'invalid'};
         } else if (err == 'pwdError') {
-          returnObj = {'pwdValid' : 'invalid icon-cancel-circled'};
+          returnObj = {'pwdValid' : 'invalid'};
         }
         self.setState({errorMsg: msg});
         self.setState(returnObj);
@@ -69,12 +69,12 @@ var Modal = React.createClass({
     });
     globalEventEmitter.on('emailValidated', function(loc){
       if (loc == 'editUser') {
-        self.setState({emailValid : 'valid icon-ok-circled'});
+        self.setState({emailValid : 'valid'});
       }
     });
     globalEventEmitter.on('pwdValidated', function(loc){
       if (loc == 'editUser') {
-        self.setState({pwdValid : 'valid icon-ok-circled'});
+        self.setState({pwdValid : 'valid'});
       }
     });
   },
@@ -116,7 +116,7 @@ var Modal = React.createClass({
     this.setState({tokens: arrTokens});
   },
   handleSave: function(){
-    if (this.state.emailValid == 'valid icon-ok-circled' && this.state.pwdValid == 'valid icon-ok-circled') {
+    if (this.state.emailValid == 'valid' && this.state.pwdValid == 'valid') {
       this.updateInLocalStorage(this.state);
     } else {
       globalEventEmitter.emit('errorMsg','fixErrors','editUser','Fix Errors First');
@@ -130,6 +130,10 @@ var Modal = React.createClass({
   },
   render: function() {
     var self = this;
+    var iconEmailValid = this.state.emailValid == 'valid' ? 'valid icon-ok-circled' : 'invalid icon-cancel-circled';
+    iconEmailValid = this.state.emailValid == '' ? '' : iconEmailValid;
+    var iconPwdValid = this.state.pwdValid == 'valid' ? 'valid icon-ok-circled' : 'invalid icon-cancel-circled';
+    iconPwdValid = this.state.pwdValid == '' ? '' : iconPwdValid;
     var tokens = this.state.tokens.map(function(token,i){
       return (
         <div className="token" key={i}>
@@ -142,7 +146,7 @@ var Modal = React.createClass({
     });
     var showErrorMsg = this.state.errorMsg ? 'message warning visible' : 'invisible';
     var btnClass = 'disabled';
-    if (this.state.emailValid == 'valid icon-ok-circled' && this.state.pwdValid == 'valid icon-ok-circled') {
+    if (this.state.emailValid == 'valid' && this.state.pwdValid == 'valid') {
       btnClass = '';
     }
     return (
@@ -174,7 +178,7 @@ var Modal = React.createClass({
                   onChange={this.handleChangeUsername}
                   onBlur={this.checkUsername}
                   placeholder={"Email"}/>
-                <span className={this.state.emailValid}/>
+                <span className={iconEmailValid}/>
               </div>
             </div>
             <div>
@@ -187,7 +191,7 @@ var Modal = React.createClass({
                   onChange={this.handleChangePwd}
                   onBlur={this.checkPassword}
                   placeholder={"Create a new password"}/>
-                <span className={this.state.pwdValid}/>
+                <span className={iconPwdValid}/>
               </div>
             </div>
             <div>

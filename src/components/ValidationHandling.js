@@ -1,7 +1,7 @@
-// error messaging
+// validation
 import globalEventEmitter from './GlobalEvents';
 import validator from 'validator';
-var Message = {
+var ValidationMixin = {
   checkValidEmail: function(userName,loc){
     var isValid = validator.isEmail(userName);
     if (!isValid) {
@@ -37,4 +37,4 @@ var Message = {
     globalEventEmitter.emit('errorMsg', err, loc, msg);
   }
 }
-export default Message
+export default ValidationMixin
